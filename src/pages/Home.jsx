@@ -1,18 +1,19 @@
+import HeroSection from "../components/home/HeroSection";
+
 const Home = () => {
   return (
-    <div className="min-h-screen">
-      {/* Placeholder - Will be implemented in Step 9-12 */}
-      <div className="hero min-h-[60vh] bg-gradient-to-br from-primary/10 to-secondary/10">
-        <div className="hero-content text-center">
-          <div className="max-w-md">
-            <h1 className="text-5xl font-bold">Welcome to AssetVerse</h1>
-            <p className="py-6">
-              Corporate Asset Management System - Track, assign, and manage your company assets efficiently.
-            </p>
-            <button className="btn btn-primary">Get Started</button>
-          </div>
-        </div>
-      </div>
+    <div>
+      {/* Hero Section */}
+      <HeroSection />
+
+      {/* More sections will be added in upcoming steps */}
+      {/* - About Section */}
+      {/* - Packages Section */}
+      {/* - Features Section */}
+      {/* - Testimonials Section */}
+      {/* - How It Works Section */}
+      {/* - FAQ Section */}
+      {/* - CTA Section */}
     </div>
   );
 };
