@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import {
@@ -10,9 +10,11 @@ import {
   FiX,
   FiEye,
   FiEyeOff,
-  FiCheck,
   FiAlertCircle,
-  FiSearch,
+  FiArrowRight,
+  FiBriefcase,
+  FiCheckCircle,
+  FiUsers,
 } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
@@ -25,11 +27,6 @@ const RegisterEmployee = () => {
   const [photoFile, setPhotoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [companies, setCompanies] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [loadingCompanies, setLoadingCompanies] = useState(true);
 
   const { createUser, updateUserProfile, googleSignIn } = useAuth();
   const navigate = useNavigate();
@@ -39,32 +36,9 @@ const RegisterEmployee = () => {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue,
   } = useForm();
 
   const password = watch("password", "");
-
-  // Fetch companies on mount
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const { data } = await axiosInstance.get("/companies");
-        setCompanies(data);
-      } catch (error) {
-        console.error("Error fetching companies:", error);
-        // Use empty array if API fails
-        setCompanies([]);
-      } finally {
-        setLoadingCompanies(false);
-      }
-    };
-    fetchCompanies();
-  }, []);
-
-  // Filter companies based on search
-  const filteredCompanies = companies.filter((company) =>
-    company.companyName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Password strength checker
   const getPasswordStrength = (pass) => {
@@ -146,35 +120,8 @@ const RegisterEmployee = () => {
     }
   };
 
-  // Handle company selection
-  const handleSelectCompany = (company) => {
-    setSelectedCompany(company);
-    setSearchTerm(company.companyName);
-    setShowDropdown(false);
-    setValue("companyId", company._id);
-  };
-
   // Handle form submission
   const onSubmit = async (data) => {
-    if (!selectedCompany) {
-      Swal.fire({
-        icon: "warning",
-        title: "Company Required",
-        text: "Please select your company from the list",
-      });
-      return;
-    }
-
-    // Check if company has available slots
-    if (selectedCompany.currentEmployees >= selectedCompany.packageLimit) {
-      Swal.fire({
-        icon: "error",
-        title: "Company Full",
-        text: "This company has reached its employee limit. Please contact your HR manager.",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -192,36 +139,34 @@ const RegisterEmployee = () => {
       // Update profile with name and photo
       await updateUserProfile(data.name, photoUrl || null);
 
-      // Save user to database
+      // Save user to database - NO company affiliation fields
+      // Affiliations are tracked in separate employeeAffiliations collection
       const userData = {
         name: data.name,
         email: data.email,
         dateOfBirth: data.dateOfBirth,
         profileImage: photoUrl,
         role: "employee",
-        companyId: selectedCompany._id,
-        companyName: selectedCompany.companyName,
-        companyLogo: selectedCompany.companyLogo,
-        hrEmail: selectedCompany.email,
-        status: "active",
+        // Note: No company fields - affiliations tracked separately
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
       await axiosInstance.post("/users", userData);
 
-      // Update company employee count
-      await axiosInstance.patch(`/companies/${selectedCompany._id}/increment-employees`);
-
       Swal.fire({
         icon: "success",
         title: "Registration Successful!",
-        text: `Welcome to ${selectedCompany.companyName}. You can now request company assets.`,
-        timer: 2000,
-        showConfirmButton: false,
+        html: `
+          <div class="text-left">
+            <p class="mb-2">Welcome to AssetVerse!</p>
+            <p class="text-sm opacity-70">You can now browse and request assets from any company. Once an HR approves your request, you'll be affiliated with that company.</p>
+          </div>
+        `,
+        confirmButtonText: "Go to Dashboard",
       });
 
-      navigate("/dashboard/my-assets");
+      navigate("/dashboard/request-asset");
     } catch (error) {
       console.error("Registration error:", error);
       Swal.fire({
@@ -237,53 +182,42 @@ const RegisterEmployee = () => {
 
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
-    if (!selectedCompany) {
-      Swal.fire({
-        icon: "warning",
-        title: "Company Required",
-        text: "Please select your company first before signing in with Google",
-      });
-      return;
-    }
-
     try {
       const result = await googleSignIn();
       const user = result.user;
 
       // Check if user exists in database
-      const { data: existingUser } = await axiosInstance.get(`/users/${user.email}`);
-
-      if (existingUser) {
-        navigate(existingUser.role === "hr" ? "/dashboard/asset-list" : "/dashboard/my-assets");
-      } else {
-        // New user - create employee account
-        const userData = {
-          name: user.displayName,
-          email: user.email,
-          profileImage: user.photoURL,
-          role: "employee",
-          companyId: selectedCompany._id,
-          companyName: selectedCompany.companyName,
-          companyLogo: selectedCompany.companyLogo,
-          hrEmail: selectedCompany.email,
-          status: "active",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        await axiosInstance.post("/users", userData);
-        await axiosInstance.patch(`/companies/${selectedCompany._id}/increment-employees`);
-
-        Swal.fire({
-          icon: "success",
-          title: "Welcome!",
-          text: `You've joined ${selectedCompany.companyName}`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        navigate("/dashboard/my-assets");
+      try {
+        const { data: existingUser } = await axiosInstance.get(`/users/${user.email}`);
+        if (existingUser) {
+          navigate(existingUser.role === "hr" ? "/dashboard/asset-list" : "/dashboard/my-assets");
+          return;
+        }
+      } catch {
+        // User doesn't exist, continue with registration
       }
+
+      // New user - create employee account (no company affiliation)
+      const userData = {
+        name: user.displayName,
+        email: user.email,
+        profileImage: user.photoURL,
+        role: "employee",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      await axiosInstance.post("/users", userData);
+
+      Swal.fire({
+        icon: "success",
+        title: "Welcome!",
+        text: "Your account has been created. Start requesting assets from companies!",
+        timer: 2500,
+        showConfirmButton: false,
+      });
+
+      navigate("/dashboard/request-asset");
     } catch (error) {
       console.error("Google sign in error:", error);
       Swal.fire({
@@ -303,51 +237,73 @@ const RegisterEmployee = () => {
             <div className="lg:col-span-2 bg-gradient-to-br from-secondary to-accent p-8 lg:p-10 text-secondary-content flex flex-col justify-center">
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-bold">Join Your Team</h1>
+                  <h1 className="text-3xl lg:text-4xl font-bold">Join AssetVerse</h1>
                   <p className="text-secondary-content/80 mt-2">
                     as an Employee
                   </p>
                 </div>
 
+                {/* How It Works */}
                 <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">How It Works</h3>
+                  
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-secondary-content/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <FiCheck className="h-4 w-4" />
+                      <FiUser className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Request Assets</h3>
+                      <h4 className="font-semibold">1. Create Account</h4>
                       <p className="text-sm text-secondary-content/70">
-                        Request laptops, equipment, and more
+                        Register with your personal details
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-secondary-content/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <FiCheck className="h-4 w-4" />
+                      <FiBriefcase className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Track Your Assets</h3>
+                      <h4 className="font-semibold">2. Browse & Request</h4>
                       <p className="text-sm text-secondary-content/70">
-                        Monitor all assets assigned to you
+                        View assets from all companies and request what you need
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-secondary-content/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <FiCheck className="h-4 w-4" />
+                      <FiCheckCircle className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Team Collaboration</h3>
+                      <h4 className="font-semibold">3. Get Approved</h4>
                       <p className="text-sm text-secondary-content/70">
-                        Connect with your team members
+                        HR approves your request & you become affiliated
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-secondary-content/20 flex items-center justify-center shrink-0 mt-0.5">
+                      <FiUsers className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">4. Multiple Companies</h4>
+                      <p className="text-sm text-secondary-content/70">
+                        Work with multiple companies simultaneously
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4">
+                {/* Feature Badge */}
+                <div className="bg-secondary-content/10 rounded-lg p-4">
+                  <p className="text-sm">
+                    <span className="font-semibold">💡 Pro Tip:</span> You can request assets from any company. Your affiliation is created automatically when your first request is approved!
+                  </p>
+                </div>
+
+                <div className="pt-2">
                   <p className="text-sm text-secondary-content/70">
                     Already have an account?{" "}
                     <Link to="/login" className="font-semibold underline hover:no-underline">
@@ -404,85 +360,6 @@ const RegisterEmployee = () => {
                         <p className="text-xs">PNG, JPG up to 2MB</p>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Company Selection */}
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-medium">Select Your Company *</span>
-                    </label>
-                    <div className="relative">
-                      <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
-                      <input
-                        type="text"
-                        placeholder={loadingCompanies ? "Loading companies..." : "Search for your company"}
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setShowDropdown(true);
-                          if (selectedCompany?.companyName !== e.target.value) {
-                            setSelectedCompany(null);
-                          }
-                        }}
-                        onFocus={() => setShowDropdown(true)}
-                        className={`input input-bordered w-full pl-10 ${
-                          !selectedCompany && searchTerm ? "input-warning" : ""
-                        }`}
-                        disabled={loadingCompanies}
-                      />
-                      <input type="hidden" {...register("companyId")} />
-
-                      {/* Dropdown */}
-                      {showDropdown && filteredCompanies.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                          {filteredCompanies.map((company) => (
-                            <button
-                              type="button"
-                              key={company._id}
-                              onClick={() => handleSelectCompany(company)}
-                              className="w-full px-4 py-3 flex items-center gap-3 hover:bg-base-200 transition-colors text-left"
-                            >
-                              {company.companyLogo ? (
-                                <img
-                                  src={company.companyLogo}
-                                  alt={company.companyName}
-                                  className="w-10 h-10 rounded-lg object-cover"
-                                />
-                              ) : (
-                                <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
-                                  <span className="text-secondary font-bold">
-                                    {company.companyName.charAt(0)}
-                                  </span>
-                                </div>
-                              )}
-                              <div>
-                                <p className="font-medium">{company.companyName}</p>
-                                <p className="text-xs text-base-content/50">
-                                  {company.currentEmployees}/{company.packageLimit} employees
-                                </p>
-                              </div>
-                              {company.currentEmployees >= company.packageLimit && (
-                                <span className="ml-auto badge badge-error badge-sm">Full</span>
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {showDropdown && searchTerm && filteredCompanies.length === 0 && !loadingCompanies && (
-                        <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg p-4 text-center text-base-content/70">
-                          No companies found. Ask your HR to register first.
-                        </div>
-                      )}
-                    </div>
-                    {selectedCompany && (
-                      <label className="label">
-                        <span className="label-text-alt text-success flex items-center gap-1">
-                          <FiCheck className="h-3 w-3" />
-                          Selected: {selectedCompany.companyName}
-                        </span>
-                      </label>
-                    )}
                   </div>
 
                   {/* Full Name */}
@@ -674,7 +551,7 @@ const RegisterEmployee = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="btn btn-secondary w-full"
+                    className="btn btn-secondary w-full gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -682,7 +559,10 @@ const RegisterEmployee = () => {
                         {isUploading ? "Uploading Photo..." : "Creating Account..."}
                       </>
                     ) : (
-                      "Join Company"
+                      <>
+                        Create Account
+                        <FiArrowRight className="h-4 w-4" />
+                      </>
                     )}
                   </button>
 
