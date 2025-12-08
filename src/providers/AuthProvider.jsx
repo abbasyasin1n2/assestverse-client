@@ -77,9 +77,10 @@ const AuthProvider = ({ children }) => {
   // Get user data from database
   const getUserFromDB = async (email) => {
     try {
-      const response = await axios.get(`${API_URL}/users/${email}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_URL}/users/${encodeURIComponent(email)}`,
+        { withCredentials: true }
+      );
       return response.data;
     } catch (error) {
       console.error("Error getting user from DB:", error);
@@ -94,13 +95,25 @@ const AuthProvider = ({ children }) => {
         // Get JWT token
         const jwtData = await getJwtToken(currentUser);
 
+        // Get full user data from database
+        const dbUser = await getUserFromDB(currentUser.email);
+
         // Combine Firebase user with DB data
         const userData = {
           uid: currentUser.uid,
           email: currentUser.email,
-          displayName: currentUser.displayName,
-          photoURL: currentUser.photoURL,
-          role: jwtData?.role || null,
+          displayName: dbUser?.name || currentUser.displayName,
+          photoURL: dbUser?.profileImage || currentUser.photoURL,
+          role: dbUser?.role || jwtData?.role || null,
+          // Include all DB fields
+          name: dbUser?.name,
+          companyName: dbUser?.companyName,
+          companyLogo: dbUser?.companyLogo,
+          packageLimit: dbUser?.packageLimit,
+          currentEmployees: dbUser?.currentEmployees,
+          subscription: dbUser?.subscription,
+          dateOfBirth: dbUser?.dateOfBirth,
+          profileImage: dbUser?.profileImage,
         };
 
         setUser(userData);
@@ -119,6 +132,7 @@ const AuthProvider = ({ children }) => {
     setUser,
     createUser,
     loginUser,
+    signIn: loginUser, // Alias for loginUser
     googleSignIn,
     updateUserProfile,
     logout,

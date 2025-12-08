@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { FiMenu, FiBox, FiLogOut, FiBell, FiHome } from "react-icons/fi";
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
@@ -7,9 +7,11 @@ import MobileSidebar from "./MobileSidebar";
 const DashboardNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
+    navigate("/", { replace: true });
   };
 
   return (
@@ -66,12 +68,13 @@ const DashboardNavbar = () => {
                 {user?.photoURL ? (
                   <img
                     src={user.photoURL}
-                    alt={user?.displayName || "User"}
+                    alt={user?.name || user?.displayName || "User"}
                     referrerPolicy="no-referrer"
                   />
                 ) : (
                   <div className="bg-primary text-primary-content flex items-center justify-center w-full h-full text-lg font-bold">
-                    {user?.displayName?.[0]?.toUpperCase() ||
+                    {user?.name?.[0]?.toUpperCase() ||
+                      user?.displayName?.[0]?.toUpperCase() ||
                       user?.email?.[0]?.toUpperCase() ||
                       "U"}
                   </div>
@@ -84,7 +87,7 @@ const DashboardNavbar = () => {
             >
               <li className="menu-title">
                 <span className="text-xs text-base-content/70">
-                  {user?.displayName || user?.email}
+                  {user?.name || user?.displayName || user?.email}
                 </span>
               </li>
               <div className="divider my-1"></div>

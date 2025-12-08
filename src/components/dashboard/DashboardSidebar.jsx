@@ -95,7 +95,8 @@ const DashboardSidebar = () => {
                   />
                 ) : (
                   <div className="bg-primary text-primary-content flex items-center justify-center w-full h-full text-lg font-bold">
-                    {user?.displayName?.[0]?.toUpperCase() ||
+                    {user?.name?.[0]?.toUpperCase() ||
+                      user?.displayName?.[0]?.toUpperCase() ||
                       user?.email?.[0]?.toUpperCase() ||
                       "U"}
                   </div>
@@ -104,7 +105,7 @@ const DashboardSidebar = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm truncate">
-                {user?.displayName || "User"}
+                {user?.name || user?.displayName || "User"}
               </p>
               <span
                 className={`badge badge-sm ${

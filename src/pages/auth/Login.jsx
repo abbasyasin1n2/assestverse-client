@@ -44,7 +44,9 @@ const Login = () => {
       await signIn(data.email, data.password);
 
       // Get user data from database to determine role
-      const { data: userData } = await axiosInstance.get(`/users/${data.email}`);
+      const { data: userData } = await axiosInstance.get(
+        `/users/${encodeURIComponent(data.email)}`
+      );
 
       Swal.fire({
         icon: "success",
@@ -80,7 +82,9 @@ const Login = () => {
 
       // Check if user exists in database
       try {
-        const { data: existingUser } = await axiosInstance.get(`/users/${user.email}`);
+        const { data: existingUser } = await axiosInstance.get(
+          `/users/${encodeURIComponent(user.email)}`
+        );
         
         if (existingUser) {
           // Existing user - redirect to appropriate dashboard
