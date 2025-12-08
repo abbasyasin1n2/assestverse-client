@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import {
   FiEdit2,
@@ -40,6 +40,7 @@ const assetCategories = [
 const UpdateAsset = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -173,6 +174,10 @@ const UpdateAsset = () => {
       setUploadProgress(100);
 
       if (response.data.success) {
+        // Invalidate assets query to refresh the list
+        queryClient.invalidateQueries({ queryKey: ["assets"] });
+        queryClient.invalidateQueries({ queryKey: ["asset", id] });
+        
         Swal.fire({
           icon: "success",
           title: "Asset Updated!",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   FiPlusSquare,
   FiPackage,
@@ -42,6 +43,7 @@ const AddAsset = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -149,6 +151,9 @@ const AddAsset = () => {
       setUploadProgress(100);
 
       if (response.data.success) {
+        // Invalidate assets query to refresh the list
+        queryClient.invalidateQueries({ queryKey: ["assets"] });
+        
         Swal.fire({
           icon: "success",
           title: "Asset Added!",

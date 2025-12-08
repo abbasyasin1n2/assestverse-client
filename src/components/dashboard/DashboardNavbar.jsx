@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import { FiMenu, FiBox, FiLogOut, FiBell, FiHome } from "react-icons/fi";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../hooks/useAuth";
 import MobileSidebar from "./MobileSidebar";
 
@@ -8,8 +9,11 @@ const DashboardNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
+    // Clear all cached queries before logout
+    queryClient.clear();
     await logout();
     navigate("/", { replace: true });
   };
