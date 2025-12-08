@@ -15,6 +15,7 @@ import {
   FiGrid,
   FiList,
   FiImage,
+  FiUserPlus,
 } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 import Swal from "sweetalert2";
@@ -46,6 +47,10 @@ const AssetList = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState("table"); // table or grid
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [assignAsset, setAssignAsset] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [assignNotes, setAssignNotes] = useState("");
   const limit = 10;
 
   const queryClient = useQueryClient();
@@ -74,6 +79,54 @@ const AssetList = () => {
       return response.data;
     },
   });
+
+  // Fetch employees for assignment (affiliated)
+  const { data: assignEmployeesData, isLoading: employeesLoading } = useQuery({
+    queryKey: ["employees-for-assign"],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.append("limit", 200);
+      const response = await axiosInstance.get(`/affiliations/employees?${params.toString()}`);
+      return response.data?.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Assign asset mutation
+  const assignMutation = useMutation({
+    mutationFn: async ({ assetId, employeeEmail, notes }) => {
+      const response = await axiosInstance.post(`/assets/${assetId}/assign`, {
+        employeeEmail,
+        notes,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assets"]);
+      setAssignModalOpen(false);
+      setSelectedEmployee("");
+      setAssignNotes("");
+      Swal.fire({
+        icon: "success",
+        title: "Asset Assigned",
+        text: "The asset has been assigned to the employee",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    },
+    onError: (error) => {
+      Swal.fire({
+        icon: "error",
+        title: "Assignment Failed",
+        text: error.response?.data?.message || "Failed to assign asset",
+      });
+    },
+  });
+
+  const openAssignModal = (asset) => {
+    setAssignAsset(asset);
+    setAssignModalOpen(true);
+  };
 
   // Delete asset mutation
   const deleteMutation = useMutation({
@@ -386,6 +439,14 @@ const AssetList = () => {
                           <FiEdit2 className="h-4 w-4" />
                         </Link>
                         <button
+                          className="btn btn-ghost btn-sm btn-square"
+                          title="Assign"
+                          onClick={() => openAssignModal(asset)}
+                          disabled={asset.availableQuantity < 1}
+                        >
+                          <FiUserPlus className="h-4 w-4" />
+                        </button>
+                        <button
                           className="btn btn-ghost btn-sm btn-square text-error"
                           onClick={() => handleDelete(asset)}
                           title="Delete"
@@ -456,6 +517,14 @@ const AssetList = () => {
                     <FiEdit2 className="h-4 w-4" />
                     Edit
                   </Link>
+                    <button
+                      className="btn btn-ghost btn-sm gap-1"
+                      onClick={() => openAssignModal(asset)}
+                      disabled={asset.availableQuantity < 1}
+                    >
+                      <FiUserPlus className="h-4 w-4" />
+                      Assign
+                    </button>
                   <button
                     className="btn btn-ghost btn-sm text-error gap-1"
                     onClick={() => handleDelete(asset)}
@@ -509,6 +578,80 @@ const AssetList = () => {
             >
               <FiChevronRight className="h-5 w-5" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Assign Modal */}
+      {assignModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-2">Assign Asset</h3>
+            <p className="text-sm text-base-content/70 mb-4">
+              {assignAsset?.name} • {assignAsset?.availableQuantity} available
+            </p>
+
+            <div className="form-control mb-3">
+              <label className="label">
+                <span className="label-text">Select Employee</span>
+              </label>
+              <select
+                className="select select-bordered w-full"
+                value={selectedEmployee}
+                onChange={(e) => setSelectedEmployee(e.target.value)}
+                disabled={employeesLoading}
+              >
+                <option value="">Choose an employee</option>
+                {(assignEmployeesData || []).map((emp) => (
+                  <option key={emp._id} value={emp.employeeEmail}>
+                    {emp.employeeName} ({emp.employeeEmail})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text">Notes (optional)</span>
+              </label>
+              <textarea
+                className="textarea textarea-bordered"
+                rows={2}
+                value={assignNotes}
+                onChange={(e) => setAssignNotes(e.target.value)}
+                placeholder="Add a note"
+              />
+            </div>
+
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setAssignModalOpen(false);
+                  setSelectedEmployee("");
+                  setAssignNotes("");
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                disabled={!selectedEmployee || assignMutation.isPending}
+                onClick={() =>
+                  assignMutation.mutate({
+                    assetId: assignAsset._id,
+                    employeeEmail: selectedEmployee,
+                    notes: assignNotes,
+                  })
+                }
+              >
+                {assignMutation.isPending ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  "Assign"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -55,6 +55,16 @@ const MyTeam = () => {
   const totalMembers = teamData?.pagination?.total || 0;
   const companies = affiliationsData?.data || [];
 
+  const currentMonth = new Date().getMonth();
+  const birthdays = teamMembers
+    .filter((member) => member.dateOfBirth && new Date(member.dateOfBirth).getMonth() === currentMonth)
+    .map((member) => ({
+      ...member,
+      day: new Date(member.dateOfBirth).getDate(),
+    }))
+    .sort((a, b) => a.day - b.day)
+    .slice(0, 6);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -71,6 +81,42 @@ const MyTeam = () => {
           </div>
         </div>
       </div>
+
+      {/* Upcoming Birthdays */}
+      {!isLoading && !isError && birthdays.length > 0 && (
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FiUsers className="h-5 w-5 text-primary" />
+                <h3 className="text-lg font-semibold">Upcoming Birthdays (this month)</h3>
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              {birthdays.map((member) => (
+                <div key={member._id} className="p-4 rounded-lg bg-base-200/60 flex items-center gap-3">
+                  <div className="avatar">
+                    <div className="w-12 rounded-full bg-base-300">
+                      {member.profileImage ? (
+                        <img src={member.profileImage} alt={member.name} className="object-cover" />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full">
+                          <FiUser className="h-5 w-5 text-base-content/50" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold truncate">{member.name}</p>
+                    <p className="text-sm text-base-content/60 truncate">{member.companyName || "Team Member"}</p>
+                    <p className="text-xs text-base-content/60">🎂 {member.day} {new Date().toLocaleString('default',{ month:'short'})}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card bg-base-100 shadow-sm">
