@@ -16,6 +16,11 @@ const DashboardSidebar = () => {
 
   const employeeLinks = [
     {
+      to: "/dashboard/employee-home",
+      icon: FiHome,
+      label: "Dashboard",
+    },
+    {
       to: "/dashboard/my-assets",
       icon: FiBox,
       label: "My Assets",
@@ -38,6 +43,11 @@ const DashboardSidebar = () => {
   ];
 
   const hrLinks = [
+    {
+      to: "/dashboard/hr-home",
+      icon: FiHome,
+      label: "Dashboard",
+    },
     {
       to: "/dashboard/asset-list",
       icon: FiBox,

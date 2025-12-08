@@ -12,12 +12,14 @@ import RegisterHR from "../pages/auth/RegisterHR";
 import NotFound from "../pages/NotFound";
 
 // Employee Dashboard Pages
+import EmployeeDashboard from "../pages/employee/Dashboard";
 import EmployeeMyAssets from "../pages/employee/MyAssets";
 import EmployeeRequestAsset from "../pages/employee/RequestAsset";
 import EmployeeMyTeam from "../pages/employee/MyTeam";
 import EmployeeProfile from "../pages/employee/Profile";
 
 // HR Dashboard Pages
+import HRDashboard from "../pages/hr/Dashboard";
 import HRAssetList from "../pages/hr/AssetList";
 import HRAddAsset from "../pages/hr/AddAsset";
 import HRUpdateAsset from "../pages/hr/UpdateAsset";
@@ -55,6 +57,19 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     errorElement: <NotFound />,
     children: [
+      // Dashboard Home Routes
+      {
+        path: "home",
+        element: <HRDashboard />, // Will be conditionally rendered in layout
+      },
+      {
+        path: "hr-home",
+        element: <HRDashboard />,
+      },
+      {
+        path: "employee-home",
+        element: <EmployeeDashboard />,
+      },
       // Employee Routes
       {
         path: "my-assets",

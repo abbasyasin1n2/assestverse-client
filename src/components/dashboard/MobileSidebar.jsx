@@ -16,6 +16,7 @@ const MobileSidebar = ({ isOpen, onClose }) => {
   const isHR = user?.role === "hr";
 
   const employeeLinks = [
+    { to: "/dashboard/employee-home", icon: FiHome, label: "Dashboard" },
     { to: "/dashboard/my-assets", icon: FiBox, label: "My Assets" },
     { to: "/dashboard/request-asset", icon: FiClipboard, label: "Request Asset" },
     { to: "/dashboard/my-team", icon: FiUsers, label: "My Team" },
@@ -23,6 +24,7 @@ const MobileSidebar = ({ isOpen, onClose }) => {
   ];
 
   const hrLinks = [
+    { to: "/dashboard/hr-home", icon: FiHome, label: "Dashboard" },
     { to: "/dashboard/asset-list", icon: FiBox, label: "Asset List" },
     { to: "/dashboard/add-asset", icon: FiPlusSquare, label: "Add Asset" },
     { to: "/dashboard/all-requests", icon: FiClipboard, label: "All Requests" },
