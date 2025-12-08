@@ -20,6 +20,7 @@ import EmployeeProfile from "../pages/employee/Profile";
 // HR Dashboard Pages
 import HRAssetList from "../pages/hr/AssetList";
 import HRAddAsset from "../pages/hr/AddAsset";
+import HRUpdateAsset from "../pages/hr/UpdateAsset";
 import HRAllRequests from "../pages/hr/AllRequests";
 import HREmployeeList from "../pages/hr/EmployeeList";
 import HRUpgradePackage from "../pages/hr/UpgradePackage";
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: "add-asset",
         element: <HRAddAsset />,
+      },
+      {
+        path: "update-asset/:id",
+        element: <HRUpdateAsset />,
       },
       {
         path: "all-requests",
