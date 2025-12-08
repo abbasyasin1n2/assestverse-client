@@ -25,7 +25,7 @@ const RegisterHR = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { createUser, updateUserProfile } = useAuth();
+  const { createUser, updateUserProfile, setIsRegistering, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -130,6 +130,8 @@ const RegisterHR = () => {
     }
 
     setIsSubmitting(true);
+    // Prevent onAuthStateChanged from running during registration
+    setIsRegistering(true);
 
     try {
       // Upload logo to Cloudinary
@@ -163,6 +165,9 @@ const RegisterHR = () => {
 
       await axiosInstance.post("/users", userData);
 
+      // Now that MongoDB user exists, refresh auth state
+      await refreshUser();
+
       Swal.fire({
         icon: "success",
         title: "Registration Successful!",
@@ -182,6 +187,7 @@ const RegisterHR = () => {
     } finally {
       setIsSubmitting(false);
       setIsUploading(false);
+      setIsRegistering(false);
     }
   };
 

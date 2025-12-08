@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useRef } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -19,6 +19,9 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const googleProvider = new GoogleAuthProvider();
+  
+  // Flag to skip auth check during registration
+  const isRegistering = useRef(false);
 
   // Register with email and password
   const createUser = async (email, password) => {
@@ -88,15 +91,72 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // Refresh user data (call after registration completes)
+  const refreshUser = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
+
+    setLoading(true);
+    
+    // Get JWT token
+    const jwtData = await getJwtToken(currentUser);
+
+    // Get full user data from database
+    const dbUser = await getUserFromDB(currentUser.email);
+
+    // Combine Firebase user with DB data
+    const userData = {
+      uid: currentUser.uid,
+      email: currentUser.email,
+      displayName: dbUser?.name || currentUser.displayName,
+      photoURL: dbUser?.profileImage || currentUser.photoURL,
+      role: dbUser?.role || jwtData?.role || null,
+      // Include all DB fields
+      name: dbUser?.name,
+      companyName: dbUser?.companyName,
+      companyLogo: dbUser?.companyLogo,
+      packageLimit: dbUser?.packageLimit,
+      currentEmployees: dbUser?.currentEmployees,
+      subscription: dbUser?.subscription,
+      dateOfBirth: dbUser?.dateOfBirth,
+      profileImage: dbUser?.profileImage,
+    };
+
+    setUser(userData);
+    setLoading(false);
+  };
+
   // Auth state observer
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      // Skip if we're in the middle of registration
+      if (isRegistering.current) {
+        setLoading(false);
+        return;
+      }
+
       if (currentUser) {
-        // Get JWT token
+        // Get JWT token (don't fail if it doesn't work)
         const jwtData = await getJwtToken(currentUser);
 
         // Get full user data from database
         const dbUser = await getUserFromDB(currentUser.email);
+
+        // If user doesn't exist in DB yet (new registration), just use Firebase data
+        if (!dbUser && !jwtData?.role) {
+          // User exists in Firebase but not in MongoDB yet - this is a new registration
+          // Set basic user data, they'll be redirected to complete registration or refreshed
+          setUser({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL,
+            role: null,
+            isNewUser: true,
+          });
+          setLoading(false);
+          return;
+        }
 
         // Combine Firebase user with DB data
         const userData = {
@@ -126,6 +186,11 @@ const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  // Set registering flag
+  const setIsRegistering = (value) => {
+    isRegistering.current = value;
+  };
+
   const authInfo = {
     user,
     loading,
@@ -138,6 +203,8 @@ const AuthProvider = ({ children }) => {
     logout,
     getJwtToken,
     getUserFromDB,
+    refreshUser,
+    setIsRegistering,
   };
 
   return (

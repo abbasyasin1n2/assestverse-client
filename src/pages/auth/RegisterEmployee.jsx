@@ -28,7 +28,7 @@ const RegisterEmployee = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { createUser, updateUserProfile, googleSignIn } = useAuth();
+  const { createUser, updateUserProfile, googleSignIn, setIsRegistering, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -123,6 +123,8 @@ const RegisterEmployee = () => {
   // Handle form submission
   const onSubmit = async (data) => {
     setIsSubmitting(true);
+    // Prevent onAuthStateChanged from running during registration
+    setIsRegistering(true);
 
     try {
       // Upload photo if provided
@@ -154,6 +156,9 @@ const RegisterEmployee = () => {
 
       await axiosInstance.post("/users", userData);
 
+      // Now that MongoDB user exists, refresh auth state
+      await refreshUser();
+
       Swal.fire({
         icon: "success",
         title: "Registration Successful!",
@@ -177,19 +182,22 @@ const RegisterEmployee = () => {
     } finally {
       setIsSubmitting(false);
       setIsUploading(false);
+      setIsRegistering(false);
     }
   };
 
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
+    setIsRegistering(true);
     try {
       const result = await googleSignIn();
       const user = result.user;
 
       // Check if user exists in database
       try {
-        const { data: existingUser } = await axiosInstance.get(`/users/${user.email}`);
+        const { data: existingUser } = await axiosInstance.get(`/users/${encodeURIComponent(user.email)}`);
         if (existingUser) {
+          await refreshUser();
           navigate(existingUser.role === "hr" ? "/dashboard/asset-list" : "/dashboard/my-assets");
           return;
         }
@@ -209,6 +217,9 @@ const RegisterEmployee = () => {
 
       await axiosInstance.post("/users", userData);
 
+      // Refresh auth state after MongoDB user is created
+      await refreshUser();
+
       Swal.fire({
         icon: "success",
         title: "Welcome!",
@@ -225,6 +236,8 @@ const RegisterEmployee = () => {
         title: "Sign In Failed",
         text: error.message || "Failed to sign in with Google",
       });
+    } finally {
+      setIsRegistering(false);
     }
   };
 
