@@ -14,7 +14,6 @@ import {
   FiCheck,
   FiAlertCircle,
 } from "react-icons/fi";
-import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import axiosInstance from "../../api/axiosInstance";
 import Swal from "sweetalert2";
@@ -26,7 +25,7 @@ const RegisterHR = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { createUser, updateUserProfile, googleSignIn } = useAuth();
+  const { createUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -144,18 +143,20 @@ const RegisterHR = () => {
       // Update profile with name
       await updateUserProfile(data.name, logoUrl);
 
-      // Save user to database
+      // Save user to database (matches users collection schema)
       const userData = {
         name: data.name,
         email: data.email,
+        role: "hr",
+        // HR-specific fields:
         companyName: data.companyName,
         companyLogo: logoUrl,
-        dateOfBirth: data.dateOfBirth,
-        role: "hr",
         packageLimit: 5,
         currentEmployees: 0,
         subscription: "basic",
-        profileImage: logoUrl,
+        // Common fields:
+        dateOfBirth: data.dateOfBirth,
+        profileImage: null, // HR can upload separate profile image later
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -181,39 +182,6 @@ const RegisterHR = () => {
     } finally {
       setIsSubmitting(false);
       setIsUploading(false);
-    }
-  };
-
-  // Handle Google Sign In
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await googleSignIn();
-      const user = result.user;
-
-      // Check if user exists in database
-      const { data: existingUser } = await axiosInstance.get(`/users/${user.email}`);
-
-      if (existingUser) {
-        // User exists, redirect to appropriate dashboard
-        navigate(existingUser.role === "hr" ? "/dashboard/asset-list" : "/dashboard/my-assets");
-      } else {
-        // New user - redirect to complete profile
-        // For now, we'll create them as HR with default values
-        Swal.fire({
-          icon: "info",
-          title: "Complete Your Profile",
-          text: "Please provide your company details to continue as HR Manager.",
-        });
-        // Store Google user info temporarily and show company details form
-        // This will be handled in a more sophisticated way later
-      }
-    } catch (error) {
-      console.error("Google sign in error:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Sign In Failed",
-        text: error.message || "Failed to sign in with Google",
-      });
     }
   };
 
@@ -560,19 +528,6 @@ const RegisterHR = () => {
                     ) : (
                       "Create HR Account"
                     )}
-                  </button>
-
-                  {/* Divider */}
-                  <div className="divider text-sm text-base-content/50">OR</div>
-
-                  {/* Google Sign In */}
-                  <button
-                    type="button"
-                    onClick={handleGoogleSignIn}
-                    className="btn btn-outline w-full gap-2"
-                  >
-                    <FcGoogle className="h-5 w-5" />
-                    Continue with Google
                   </button>
 
                   {/* Employee Link */}
