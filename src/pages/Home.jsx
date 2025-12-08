@@ -2,6 +2,10 @@ import HeroSection from "../components/home/HeroSection";
 import AboutSection from "../components/home/AboutSection";
 import FeaturesSection from "../components/home/FeaturesSection";
 import PackagesSection from "../components/home/PackagesSection";
+import TestimonialsSection from "../components/home/TestimonialsSection";
+import HowItWorksSection from "../components/home/HowItWorksSection";
+import FAQSection from "../components/home/FAQSection";
+import CTASection from "../components/home/CTASection";
 
 const Home = () => {
   return (
@@ -18,10 +22,17 @@ const Home = () => {
       {/* Packages/Pricing Section */}
       <PackagesSection />
 
-      {/* More sections will be added in upcoming steps */}
-      {/* - Testimonials Section */}
-      {/* - How It Works + FAQ Section */}
-      {/* - CTA Section */}
+      {/* Testimonials Section */}
+      <TestimonialsSection />
+
+      {/* How It Works Section */}
+      <HowItWorksSection />
+
+      {/* FAQ Section */}
+      <FAQSection />
+
+      {/* Call to Action Section */}
+      <CTASection />
     </div>
   );
 };
