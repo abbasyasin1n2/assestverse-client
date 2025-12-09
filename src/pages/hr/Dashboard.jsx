@@ -9,6 +9,7 @@ import {
   FiAlertCircle,
   FiPieChart,
   FiArrowRight,
+  FiSmile,
 } from "react-icons/fi";
 import { Link } from "react-router";
 import Chart from "react-apexcharts";
@@ -104,7 +105,7 @@ const HRDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">
-            Welcome back, {user?.name?.split(" ")[0] || "HR Manager"}! 👋
+            Welcome back, {user?.name?.split(" ")[0] || "HR Manager"}! <FiSmile className="inline" />
           </h1>
           <p className="text-base-content/70">
             Here's what's happening with your company assets today.

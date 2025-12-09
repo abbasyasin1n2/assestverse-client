@@ -12,6 +12,7 @@ import {
   FiShield,
   FiStar,
   FiRotateCcw,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import axiosInstance from "../../api/axiosInstance";
@@ -158,7 +159,7 @@ const UpgradePackage = () => {
             <li><strong>${payment.packageName} Package</strong></li>
             <li>Amount: <strong>$${payment.amountPaid}</strong></li>
           </ul>
-          <p class="mt-3 text-sm text-warning">⚠️ Your employee limit will revert to the previous package level.</p>
+          <p class="mt-3 text-sm text-warning"><FiAlertTriangle className="inline mr-1" /> Your employee limit will revert to the previous package level.</p>
         </div>
       `,
       icon: "warning",

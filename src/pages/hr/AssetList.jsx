@@ -389,13 +389,13 @@ const AssetList = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge badge-sm ${
+                        className={`badge badge-sm whitespace-nowrap ${
                           asset.type === "returnable"
-                            ? "badge-primary badge-outline"
-                            : "badge-secondary badge-outline"
+                            ? "badge-primary"
+                            : "badge-secondary"
                         }`}
                       >
-                        {asset.type}
+                        {asset.type === "returnable" ? "Returnable" : "Non-Returnable"}
                       </span>
                     </td>
                     <td>{asset.category || "-"}</td>
@@ -415,7 +415,7 @@ const AssetList = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge badge-sm ${
+                        className={`badge badge-sm whitespace-nowrap ${
                           asset.availableQuantity > 0
                             ? "badge-success"
                             : "badge-error"

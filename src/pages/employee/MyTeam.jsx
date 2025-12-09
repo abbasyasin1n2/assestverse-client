@@ -12,6 +12,7 @@ import {
   FiAlertCircle,
   FiUser,
   FiHome,
+  FiGift,
 } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -109,7 +110,7 @@ const MyTeam = () => {
                   <div className="min-w-0">
                     <p className="font-semibold truncate">{member.name}</p>
                     <p className="text-sm text-base-content/60 truncate">{member.companyName || "Team Member"}</p>
-                    <p className="text-xs text-base-content/60">🎂 {member.day} {new Date().toLocaleString('default',{ month:'short'})}</p>
+                    <p className="text-xs text-base-content/60"><FiGift className="inline mr-1" /> {member.day} {new Date().toLocaleString('default',{ month:'short'})}</p>
                   </div>
                 </div>
               ))}

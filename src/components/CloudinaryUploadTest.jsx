@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import axios from 'axios';
+import { FiX } from 'react-icons/fi';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://assestverse-serverside.vercel.app';
 
 export default function CloudinaryUploadTest() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -189,7 +190,7 @@ export default function CloudinaryUploadTest() {
                   className="btn btn-circle btn-sm btn-error absolute -top-2 -right-2"
                   onClick={clearForm}
                 >
-                  ✕
+                  <FiX />
                 </button>
               </div>
               <p className="text-sm text-base-content/70 mt-1">

@@ -15,6 +15,7 @@ import {
   FiBriefcase,
   FiCheckCircle,
   FiUsers,
+  FiInfo,
 } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
@@ -312,7 +313,7 @@ const RegisterEmployee = () => {
                 {/* Feature Badge */}
                 <div className="bg-secondary-content/10 rounded-lg p-4">
                   <p className="text-sm">
-                    <span className="font-semibold">💡 Pro Tip:</span> You can request assets from any company. Your affiliation is created automatically when your first request is approved!
+                    <span className="font-semibold"><FiInfo className="inline mr-1" /> Pro Tip:</span> You can request assets from any company. Your affiliation is created automatically when your first request is approved!
                   </p>
                 </div>
 

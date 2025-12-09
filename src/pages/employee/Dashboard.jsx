@@ -8,6 +8,7 @@ import {
   FiArrowRight,
   FiBriefcase,
   FiCalendar,
+  FiSmile,
 } from "react-icons/fi";
 import { Link } from "react-router";
 import Chart from "react-apexcharts";
@@ -83,7 +84,7 @@ const EmployeeDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">
-            Welcome back, {user?.name?.split(" ")[0] || "Employee"}! 👋
+            Welcome back, {user?.name?.split(" ")[0] || "Employee"}! <FiSmile className="inline" />
           </h1>
           <p className="text-base-content/70">
             Here's an overview of your assets and requests.

@@ -6,6 +6,7 @@ import {
   FiStar,
   FiArrowRight,
   FiZap,
+  FiCheckCircle,
 } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -205,10 +206,10 @@ const PackagesSection = () => {
               <span className="font-medium">All plans include:</span>
             </div>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-base-content/70">
-              <span>✓ Unlimited Assets</span>
-              <span>✓ Request Management</span>
-              <span>✓ Real-time Tracking</span>
-              <span>✓ Secure Dashboard</span>
+              <span><FiCheckCircle className="inline mr-1" /> Unlimited Assets</span>
+              <span><FiCheckCircle className="inline mr-1" /> Request Management</span>
+              <span><FiCheckCircle className="inline mr-1" /> Real-time Tracking</span>
+              <span><FiCheckCircle className="inline mr-1" /> Secure Dashboard</span>
             </div>
           </div>
         </motion.div>
