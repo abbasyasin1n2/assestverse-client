@@ -24,6 +24,7 @@ A modern, responsive React application for managing company assets, employee req
 ## ✨ Features
 
 ### Authentication
+
 - 🔐 Firebase Authentication (Email/Password & Google)
 - 👤 Separate registration for HR and Employees
 - 🔄 Automatic role-based routing
@@ -31,6 +32,7 @@ A modern, responsive React application for managing company assets, employee req
 - 🚪 Protected routes
 
 ### HR Manager Features
+
 - 📊 Comprehensive dashboard with analytics
 - 📦 Asset management (CRUD operations)
 - 🔍 Advanced search, filter, and sort
@@ -43,6 +45,7 @@ A modern, responsive React application for managing company assets, employee req
 - ♻️ Refund management
 
 ### Employee Features
+
 - 📊 Personal dashboard
 - 🛒 Browse and request assets
 - 📋 View request history and status
@@ -52,6 +55,7 @@ A modern, responsive React application for managing company assets, employee req
 - 🏢 Multi-company support
 
 ### UI/UX Features
+
 - 🎨 Modern, clean interface with DaisyUI
 - 📱 Fully responsive design
 - 🌓 Light/Dark mode support
@@ -64,33 +68,39 @@ A modern, responsive React application for managing company assets, employee req
 ## 🛠️ Tech Stack
 
 ### Core
+
 - **React** 19.2.0 - UI library
 - **Vite** 7.2.4 - Build tool
 - **React Router** 7.10.1 - Navigation
 
 ### Styling
+
 - **Tailwind CSS** 4.1.17 - Utility-first CSS
 - **DaisyUI** 5.5.8 - Component library
 - **Motion** 12.23.25 - Animations
 
 ### State & Data
+
 - **TanStack React Query** 5.90.12 - Server state management
 - **Axios** 1.13.2 - HTTP client
 - **React Hook Form** 7.68.0 - Form handling
 
 ### Charts & Maps
+
 - **ApexCharts** 5.3.6 - Charts
 - **React ApexCharts** 1.9.0 - React wrapper
 - **Leaflet** 1.9.4 - Maps
 - **React Leaflet** 5.0.0-rc.2 - React wrapper
 
 ### UI Components
+
 - **React Icons** 5.5.0 - Icon library
 - **SweetAlert2** 11.26.4 - Beautiful alerts
 - **Swiper** 12.0.3 - Touch slider
 - **date-fns** 4.1.0 - Date utilities
 
 ### Authentication
+
 - **Firebase** 12.6.0 - Authentication & hosting
 
 ## 🔑 Environment Variables
@@ -115,6 +125,7 @@ VITE_FIREBASE_APP_ID=your_app_id
 ## 📦 Installation
 
 ### Prerequisites
+
 - Node.js 18 or higher
 - npm or pnpm
 - Firebase project
@@ -123,12 +134,14 @@ VITE_FIREBASE_APP_ID=your_app_id
 ### Local Development
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/your-username/assetverse-client.git
 cd assetverse-client
 ```
 
 2. **Install dependencies**
+
 ```bash
 npm install
 # or
@@ -136,12 +149,14 @@ pnpm install
 ```
 
 3. **Configure environment variables**
+
 ```bash
 cp .env.example .env
 # Edit .env with your credentials
 ```
 
 4. **Start development server**
+
 ```bash
 npm run dev
 # or
@@ -194,8 +209,10 @@ assetverse-client/
 ## 👥 User Roles
 
 ### HR Manager
+
 **Registration**: Requires company information and package selection
 **Capabilities**:
+
 - Manage company assets
 - Approve/reject employee requests
 - View and manage employees
@@ -203,6 +220,7 @@ assetverse-client/
 - View analytics and reports
 
 **Dashboard Access**: `/dashboard`
+
 - Dashboard overview
 - Asset list
 - Add asset
@@ -212,8 +230,10 @@ assetverse-client/
 - Upgrade package
 
 ### Employee
+
 **Registration**: Standard registration (no company required)
 **Capabilities**:
+
 - Browse available assets
 - Request assets
 - View assigned assets
@@ -221,6 +241,7 @@ assetverse-client/
 - View team members
 
 **Dashboard Access**: `/dashboard`
+
 - Dashboard overview
 - Request asset
 - My assets
@@ -232,19 +253,23 @@ assetverse-client/
 ### Deploy to Firebase Hosting
 
 1. **Install Firebase CLI**
+
 ```bash
 npm install -g firebase-tools
 ```
 
 2. **Login to Firebase**
+
 ```bash
 firebase login
 ```
 
 3. **Initialize Firebase** (first time only)
+
 ```bash
 firebase init hosting
 ```
+
 - Select: Use existing project
 - Choose your Firebase project
 - Public directory: **dist**
@@ -252,11 +277,13 @@ firebase init hosting
 - Overwrite index.html: **No**
 
 4. **Build production bundle**
+
 ```bash
 npm run build
 ```
 
 5. **Deploy**
+
 ```bash
 firebase deploy --only hosting
 ```
@@ -264,7 +291,9 @@ firebase deploy --only hosting
 ### Post-Deployment
 
 1. **Update Server CORS**
+
    - Add Firebase URLs to server's `CLIENT_ORIGIN`:
+
    ```
    https://your-app.web.app,https://your-app.firebaseapp.com,http://localhost:5173
    ```
@@ -285,6 +314,7 @@ npm run lint       # Run ESLint
 ## 🎨 Features Breakdown
 
 ### Home Page
+
 - Hero section with animations
 - Features showcase
 - How it works section
@@ -295,6 +325,7 @@ npm run lint       # Run ESLint
 - Call-to-action section
 
 ### Authentication
+
 - Email/Password registration & login
 - Google Sign-In
 - Separate HR and Employee registration
@@ -303,6 +334,7 @@ npm run lint       # Run ESLint
 - Form validation
 
 ### HR Dashboard
+
 - Asset statistics
 - Request statistics
 - Recent requests
@@ -310,6 +342,7 @@ npm run lint       # Run ESLint
 - Quick actions
 
 ### Employee Dashboard
+
 - Asset statistics
 - Request status
 - Assigned assets
@@ -317,6 +350,7 @@ npm run lint       # Run ESLint
 - Quick request action
 
 ### Asset Management (HR)
+
 - Grid and table view
 - Advanced filters (type, category, status)
 - Search functionality
@@ -326,6 +360,7 @@ npm run lint       # Run ESLint
 - CRUD operations
 
 ### Request Management
+
 - Real-time status updates
 - Filter by status
 - Approve/reject actions
@@ -333,6 +368,7 @@ npm run lint       # Run ESLint
 - Notes and messages
 
 ### Package System
+
 - Basic (5 employees) - Free
 - Standard (10 employees) - $8
 - Premium (20 employees) - $15
@@ -353,20 +389,24 @@ npm run lint       # Run ESLint
 ## 🐛 Troubleshooting
 
 ### CORS Errors
+
 - Verify `VITE_API_URL` in `.env`
 - Ensure server has your client URLs in `CLIENT_ORIGIN`
 
 ### Firebase Auth Not Working
+
 - Check all `VITE_FIREBASE_*` variables are set
 - Verify Firebase Console settings
 - Check authorized domains
 
 ### Build Fails
+
 - Delete `node_modules` and reinstall
 - Clear Vite cache: `rm -rf node_modules/.vite`
 - Check for TypeScript/ESLint errors
 
 ### Images Not Loading
+
 - Check Cloudinary credentials on server
 - Verify image URLs are accessible
 - Check CORS settings for images
@@ -378,7 +418,20 @@ MIT License - feel free to use this project for learning and commercial purposes
 ## 👨‍💻 Author
 
 **Abbas Yasin**
+
 - GitHub: [@abbasyasin1n2](https://github.com/abbasyasin1n2)
+
+## 🆕 Recent Updates
+
+### v2.0 - January 2026
+
+- **Public Assets Browse Page**: Non-authenticated users can now browse all available assets from multiple companies
+- **Asset Details Modal**: Click on any asset to see detailed information in a beautiful modal
+- **Dark Mode Toggle**: Full dark/light theme support with localStorage persistence
+- **New Standalone Pages**: Features, Pricing, How It Works, and FAQ pages
+- **Demo Credentials**: Quick login buttons for testing HR and Employee accounts
+- **Enhanced Navigation**: Resources dropdown in navbar with all informational pages
+- **Improved Animations**: Smooth page transitions and loading states
 
 ## 🙏 Acknowledgments
 

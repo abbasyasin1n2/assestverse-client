@@ -16,10 +16,12 @@ import {
   FiList,
   FiImage,
   FiUserPlus,
+  FiEye,
 } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 import Swal from "sweetalert2";
 import { format } from "date-fns";
+import AssetDetailsModal from "../../components/shared/AssetDetailsModal";
 
 const assetCategories = [
   "All Categories",
@@ -51,6 +53,8 @@ const AssetList = () => {
   const [assignAsset, setAssignAsset] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [assignNotes, setAssignNotes] = useState("");
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const limit = 10;
 
   const queryClient = useQueryClient();
@@ -431,6 +435,16 @@ const AssetList = () => {
                     </td>
                     <td>
                       <div className="flex gap-1">
+                        <button
+                          className="btn btn-ghost btn-sm btn-square"
+                          title="View Details"
+                          onClick={() => {
+                            setSelectedAsset(asset);
+                            setDetailsModalOpen(true);
+                          }}
+                        >
+                          <FiEye className="h-4 w-4" />
+                        </button>
                         <Link
                           to={`/dashboard/update-asset/${asset._id}`}
                           className="btn btn-ghost btn-sm btn-square"
@@ -510,6 +524,16 @@ const AssetList = () => {
                   </span>
                 </div>
                 <div className="card-actions justify-end mt-3">
+                  <button
+                    className="btn btn-ghost btn-sm gap-1"
+                    onClick={() => {
+                      setSelectedAsset(asset);
+                      setDetailsModalOpen(true);
+                    }}
+                  >
+                    <FiEye className="h-4 w-4" />
+                    View
+                  </button>
                   <Link
                     to={`/dashboard/update-asset/${asset._id}`}
                     className="btn btn-ghost btn-sm gap-1"
@@ -655,6 +679,50 @@ const AssetList = () => {
           </div>
         </div>
       )}
+
+      {/* Asset Details Modal */}
+      <AssetDetailsModal
+        asset={selectedAsset}
+        isOpen={detailsModalOpen}
+        onClose={() => {
+          setDetailsModalOpen(false);
+          setSelectedAsset(null);
+        }}
+        showActions={true}
+        onAction={
+          selectedAsset && (
+            <div className="flex gap-2 w-full">
+              <Link
+                to={`/dashboard/update-asset/${selectedAsset._id}`}
+                className="btn btn-primary btn-sm flex-1"
+              >
+                <FiEdit2 className="h-4 w-4" />
+                Edit
+              </Link>
+              <button
+                className="btn btn-info btn-sm flex-1"
+                onClick={() => {
+                  setDetailsModalOpen(false);
+                  openAssignModal(selectedAsset);
+                }}
+                disabled={selectedAsset.availableQuantity < 1}
+              >
+                <FiUserPlus className="h-4 w-4" />
+                Assign
+              </button>
+              <button
+                className="btn btn-error btn-sm"
+                onClick={() => {
+                  setDetailsModalOpen(false);
+                  handleDelete(selectedAsset);
+                }}
+              >
+                <FiTrash2 className="h-4 w-4" />
+              </button>
+            </div>
+          )
+        }
+      />
     </div>
   );
 };

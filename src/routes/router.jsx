@@ -10,6 +10,16 @@ import Login from "../pages/auth/Login";
 import RegisterEmployee from "../pages/auth/RegisterEmployee";
 import RegisterHR from "../pages/auth/RegisterHR";
 import NotFound from "../pages/NotFound";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import Blog from "../pages/Blog";
+import Privacy from "../pages/Privacy";
+import Terms from "../pages/Terms";
+import Features from "../pages/Features";
+import Pricing from "../pages/Pricing";
+import HowItWorks from "../pages/HowItWorks";
+import FAQ from "../pages/FAQ";
+import Assets from "../pages/Assets";
 
 // Employee Dashboard Pages
 import EmployeeDashboard from "../pages/employee/Dashboard";
@@ -49,6 +59,46 @@ const router = createBrowserRouter([
       {
         path: "join-as-hr",
         element: <RegisterHR />,
+      },
+      {
+        path: "about",
+        element: <About />,
+      },
+      {
+        path: "contact",
+        element: <Contact />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
+      },
+      {
+        path: "privacy",
+        element: <Privacy />,
+      },
+      {
+        path: "terms",
+        element: <Terms />,
+      },
+      {
+        path: "features",
+        element: <Features />,
+      },
+      {
+        path: "pricing",
+        element: <Pricing />,
+      },
+      {
+        path: "how-it-works",
+        element: <HowItWorks />,
+      },
+      {
+        path: "faq",
+        element: <FAQ />,
+      },
+      {
+        path: "assets",
+        element: <Assets />,
       },
     ],
   },

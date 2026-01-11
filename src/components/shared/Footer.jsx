@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { FiBox, FiMail, FiPhone, FiMapPin, FiSend, FiArrowRight } from "react-icons/fi";
-import { FaFacebook, FaLinkedin, FaYoutube, FaInstagram } from "react-icons/fa";
+import { FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
 import TrustedBrands from "./TrustedBrands";
@@ -24,24 +24,25 @@ const Footer = () => {
   ];
 
   const resourceLinks = [
-    { to: "#features", label: "Features" },
-    { to: "#packages", label: "Pricing Plans" },
-    { to: "#how-it-works", label: "How It Works" },
-    { to: "#faq", label: "FAQ" },
+    { to: "/features", label: "Features" },
+    { to: "/pricing", label: "Pricing Plans" },
+    { to: "/how-it-works", label: "How It Works" },
+    { to: "/faq", label: "FAQ" },
+    { to: "/about", label: "About Us" },
+    { to: "/blog", label: "Blog" },
+    { to: "/contact", label: "Contact" },
   ];
 
   const legalLinks = [
     { to: "/privacy", label: "Privacy Policy" },
     { to: "/terms", label: "Terms of Service" },
-    { to: "/cookies", label: "Cookie Policy" },
   ];
 
   const socialLinks = [
-    { href: "https://facebook.com", icon: FaFacebook, label: "Facebook", color: "hover:text-blue-500" },
-    { href: "https://twitter.com", icon: FaXTwitter, label: "X (Twitter)", color: "hover:text-gray-400" },
-    { href: "https://linkedin.com", icon: FaLinkedin, label: "LinkedIn", color: "hover:text-blue-600" },
-    { href: "https://instagram.com", icon: FaInstagram, label: "Instagram", color: "hover:text-pink-500" },
-    { href: "https://youtube.com", icon: FaYoutube, label: "YouTube", color: "hover:text-red-500" },
+    { href: "https://www.facebook.com/abbas.yasin.7", icon: FaFacebook, label: "Facebook", color: "hover:text-blue-500" },
+    { href: "https://x.com/bankai_tenshou", icon: FaXTwitter, label: "X (Twitter)", color: "hover:text-gray-400" },
+    { href: "https://www.linkedin.com/in/abbas-yasin-789452392/", icon: FaLinkedin, label: "LinkedIn", color: "hover:text-blue-600" },
+    { href: "https://www.instagram.com/abbasyasin1n2/", icon: FaInstagram, label: "Instagram", color: "hover:text-pink-500" },
   ];
 
   return (

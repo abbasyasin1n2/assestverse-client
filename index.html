@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -8,6 +8,19 @@
     <meta name="keywords" content="asset management, HR, corporate, tracking, Bangladesh" />
     <meta name="author" content="AssetVerse" />
     <title>AssetVerse - Corporate Asset Management</title>
+    <!-- Prevent flash of wrong theme -->
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('assetverse-theme');
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

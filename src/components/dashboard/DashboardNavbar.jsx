@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router";
-import { FiMenu, FiBox, FiLogOut, FiBell, FiHome } from "react-icons/fi";
+import { FiMenu, FiBox, FiLogOut, FiBell, FiHome, FiSun, FiMoon } from "react-icons/fi";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../hooks/useAuth";
+import { useTheme } from "../../providers/ThemeProvider";
 import MobileSidebar from "./MobileSidebar";
 
 const DashboardNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -52,6 +54,19 @@ const DashboardNavbar = () => {
             <FiHome className="h-4 w-4" />
             Home
           </Link>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="btn btn-ghost btn-circle"
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDark ? (
+              <FiSun className="h-5 w-5 text-yellow-400" />
+            ) : (
+              <FiMoon className="h-5 w-5 text-slate-600" />
+            )}
+          </button>
 
           {/* Notifications */}
           <button className="btn btn-ghost btn-circle">

@@ -15,16 +15,20 @@ import {
   FiChevronRight,
   FiInbox,
   FiAlertCircle,
+  FiEye,
 } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 import Swal from "sweetalert2";
 import { format } from "date-fns";
+import AssetDetailsModal from "../../components/shared/AssetDetailsModal";
 
 const MyAssets = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const limit = 10;
 
   const queryClient = useQueryClient();
@@ -325,6 +329,19 @@ const MyAssets = () => {
                   {/* Status & Actions */}
                   <div className="flex items-center gap-3">
                     {getStatusBadge(asset.status, asset.assetType)}
+
+                    {/* View Details button */}
+                    <button
+                      className="btn btn-ghost btn-sm gap-1"
+                      onClick={() => {
+                        setSelectedAsset(asset);
+                        setDetailsModalOpen(true);
+                      }}
+                      title="View details"
+                    >
+                      <FiEye className="h-4 w-4" />
+                      <span className="hidden sm:inline">Details</span>
+                    </button>
                     
                     {/* Print button for approved assets */}
                     {asset.status === "approved" && (
@@ -399,6 +416,48 @@ const MyAssets = () => {
           </div>
         </div>
       )}
+
+      {/* Asset Details Modal */}
+      <AssetDetailsModal
+        asset={selectedAsset}
+        isOpen={detailsModalOpen}
+        onClose={() => {
+          setDetailsModalOpen(false);
+          setSelectedAsset(null);
+        }}
+        showActions={true}
+        onAction={
+          selectedAsset && (
+            <div className="flex gap-2 w-full">
+              {selectedAsset.status === "approved" && (
+                <button
+                  className="btn btn-ghost btn-sm flex-1"
+                  onClick={() => {
+                    setDetailsModalOpen(false);
+                    handlePrint(selectedAsset);
+                  }}
+                >
+                  <FiPrinter className="h-4 w-4" />
+                  Print
+                </button>
+              )}
+              {selectedAsset.status === "approved" && selectedAsset.assetType === "returnable" && (
+                <button
+                  className="btn btn-info btn-sm flex-1"
+                  onClick={() => {
+                    setDetailsModalOpen(false);
+                    handleReturn(selectedAsset);
+                  }}
+                  disabled={returnMutation.isPending}
+                >
+                  <FiRotateCcw className="h-4 w-4" />
+                  Return
+                </button>
+              )}
+            </div>
+          )
+        }
+      />
     </div>
   );
 };

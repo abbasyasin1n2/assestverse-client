@@ -11,14 +11,19 @@ import {
   FiPlusSquare,
   FiCreditCard,
   FiChevronDown,
+  FiSun,
+  FiMoon,
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
+import { useTheme } from "../../providers/ThemeProvider";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const { user, logout, loading } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
 
   // Handle scroll effect
@@ -36,10 +41,13 @@ const Navbar = () => {
       if (isMenuOpen && !e.target.closest(".mobile-menu-container")) {
         setIsMenuOpen(false);
       }
+      if (isResourcesOpen && !e.target.closest(".resources-dropdown")) {
+        setIsResourcesOpen(false);
+      }
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isResourcesOpen]);
 
   const handleLogout = async () => {
     await logout();
@@ -48,8 +56,19 @@ const Navbar = () => {
 
   const publicNavLinks = [
     { to: "/", label: "Home" },
+    { to: "/assets", label: "Browse Assets" },
+    { to: "/about", label: "About" },
     { to: "/join-as-employee", label: "Join as Employee" },
     { to: "/join-as-hr", label: "Join as HR Manager" },
+  ];
+
+  const resourceLinks = [
+    { to: "/features", label: "Features" },
+    { to: "/pricing", label: "Pricing" },
+    { to: "/how-it-works", label: "How It Works" },
+    { to: "/faq", label: "FAQ" },
+    { to: "/blog", label: "Blog" },
+    { to: "/contact", label: "Contact" },
   ];
 
   const employeeDropdownLinks = [
@@ -129,6 +148,44 @@ const Navbar = () => {
                 </NavLink>
               </li>
             ))}
+            {/* Resources Dropdown */}
+            <li 
+              className="resources-dropdown relative"
+              onMouseEnter={() => setIsResourcesOpen(true)}
+              onMouseLeave={() => setIsResourcesOpen(false)}
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsResourcesOpen(!isResourcesOpen);
+                }}
+                className={`font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-1 ${
+                  isResourcesOpen ? "bg-base-200" : "hover:bg-base-200"
+                }`}
+              >
+                Resources
+                <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${isResourcesOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isResourcesOpen && (
+                <ul
+                  className="absolute top-full left-0 z-50 menu p-2 shadow-xl bg-base-100 rounded-xl w-52 border border-base-200"
+                >
+                  {resourceLinks.map((link) => (
+                    <li key={link.to}>
+                      <NavLink
+                        to={link.to}
+                        onClick={() => setIsResourcesOpen(false)}
+                        className={({ isActive }) =>
+                          `rounded-lg ${isActive ? "text-primary bg-primary/10" : ""}`
+                        }
+                      >
+                        {link.label}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
           </ul>
         ) : (
           <div className="flex items-center gap-2">
@@ -144,6 +201,19 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-end gap-2">
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="btn btn-ghost btn-circle"
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {isDark ? (
+            <FiSun className="h-5 w-5 text-yellow-400" />
+          ) : (
+            <FiMoon className="h-5 w-5 text-slate-600" />
+          )}
+        </button>
+
         {loading ? (
           <span className="loading loading-spinner loading-sm text-primary"></span>
         ) : user ? (
@@ -279,6 +349,23 @@ const Navbar = () => {
                   </NavLink>
                 </li>
               ))}
+              <div className="divider my-1"></div>
+              <li className="menu-title text-xs uppercase text-base-content/50">Resources</li>
+              {resourceLinks.map((link) => (
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `font-medium py-3 rounded-lg ${
+                        isActive ? "text-primary bg-primary/10" : ""
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                </li>
+              ))}
               <div className="divider my-2"></div>
               <li>
                 <Link
@@ -288,6 +375,22 @@ const Navbar = () => {
                 >
                   Login
                 </Link>
+              </li>
+              <div className="divider my-1"></div>
+              {/* Theme Toggle in Mobile Menu */}
+              <li>
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center justify-between py-3 rounded-lg"
+                >
+                  <span className="flex items-center gap-2">
+                    {isDark ? <FiSun className="h-5 w-5" /> : <FiMoon className="h-5 w-5" />}
+                    {isDark ? "Light Mode" : "Dark Mode"}
+                  </span>
+                  <div className={`w-12 h-6 rounded-full relative ${isDark ? 'bg-primary' : 'bg-base-300'}`}>
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${isDark ? 'left-7' : 'left-1'}`}></div>
+                  </div>
+                </button>
               </li>
             </>
           ) : (
@@ -355,6 +458,24 @@ const Navbar = () => {
                   </NavLink>
                 </li>
               ))}
+
+              <div className="divider my-1"></div>
+
+              {/* Theme Toggle for Logged In Users */}
+              <li>
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center justify-between py-3 rounded-lg"
+                >
+                  <span className="flex items-center gap-2">
+                    {isDark ? <FiSun className="h-5 w-5 text-yellow-400" /> : <FiMoon className="h-5 w-5" />}
+                    {isDark ? "Light Mode" : "Dark Mode"}
+                  </span>
+                  <div className={`w-12 h-6 rounded-full relative ${isDark ? 'bg-primary' : 'bg-base-300'}`}>
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${isDark ? 'left-7' : 'left-1'}`}></div>
+                  </div>
+                </button>
+              </li>
 
               <div className="divider my-1"></div>
 

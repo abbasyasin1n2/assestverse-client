@@ -11,6 +11,7 @@ import {
   FiBox,
   FiUser,
   FiBriefcase,
+  FiZap,
 } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
@@ -33,8 +34,30 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
+
+  // Demo credentials
+  const demoCredentials = {
+    hr: {
+      email: "abbasyasin1n2@gmail.com",
+      password: "abbas64151052",
+      label: "HR Manager",
+    },
+    employee: {
+      email: "yousufhasan1n2@gmail.com",
+      password: "64151052",
+      label: "Employee",
+    },
+  };
+
+  // Fill demo credentials
+  const fillDemoCredentials = (type) => {
+    const creds = demoCredentials[type];
+    setValue("email", creds.email);
+    setValue("password", creds.password);
+  };
 
   // Handle email/password login
   const onSubmit = async (data) => {
@@ -188,6 +211,32 @@ const Login = () => {
               <p className="text-base-content/60 mt-1">
                 Sign in to manage your assets
               </p>
+            </div>
+
+            {/* Demo Credentials */}
+            <div className="bg-base-200/50 rounded-xl p-4 mb-4">
+              <p className="text-sm text-base-content/70 mb-3 text-center font-medium flex items-center justify-center gap-2">
+                <FiZap className="h-4 w-4 text-warning" />
+                Try Demo Accounts
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => fillDemoCredentials("hr")}
+                  className="btn btn-sm btn-outline flex-1 gap-2"
+                >
+                  <FiBriefcase className="h-4 w-4" />
+                  HR Manager
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillDemoCredentials("employee")}
+                  className="btn btn-sm btn-outline flex-1 gap-2"
+                >
+                  <FiUser className="h-4 w-4" />
+                  Employee
+                </button>
+              </div>
             </div>
 
             {/* Login Form */}
